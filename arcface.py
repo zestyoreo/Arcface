@@ -2,8 +2,6 @@ import tensorflow as tf
 import math
 
 num_classes = 13000 #number of people in the dataset
-initializer = ""
-
 #feature vector dimension = (512) [comes from the resnet model]
 
 
@@ -25,24 +23,26 @@ class Arcface_Layer(tf.keras.layers.Layer): #Arcface layer definition
 
 
   def call(self, feature_vec, ground_truth_vec):   #inputs is the 512 dimension feature vector
-    gt = ground_truth_vec  #dims of gt is (num_classes)
+    
+    mask = ground_truth_vec  #dims of mask is (num_classes), it is a one-hot vector
+    inv_mask = tf.subtract(1., mask)
+
     # feature vector and weights norm
     x = feature_vec
     norm_x = tf.norm(feature_vec, axis=1, keepdims=True)
     norm_W = tf.norm(self.kernel, axis=0, keepdims=True)
-
-    x = x/norm_x
-    W = self.kernel/norm_W
-
-    cos_theta = tf.matmul(x,W)
-    sin_theta = tf.math.sqrt(1-tf.math.square(cos_theta))
-    theta = 
-
-    cos_m = tf.math.cos(self.m)
-    sin_m = 
-
-
-
+    x = tf.math.divide(x, norm_x)
+    W = tf.math.divide(self.kernel/norm_W)
     
-    
-    return 
+    cos_theta = tf.matmul(tf.transpose(W),x)      # logit of  W.t*x 
+    theta = tf.math.acos(cos_theta)   # all angle between each class' weight and x
+    theta_class = tf.multiply(theta,mask)            #increasing angle theta of the class x belongs to alone
+    theta_class_added_margin = theta_class + self.m
+    theta_class_added_margin = theta_class_added_margin*mask
+    cos_theta_margin = tf.math.cos(theta_class_added_margin)
+    s_cos_t = tf.multiply(self.s, cos_theta_margin)
+    s_cos_j = tf.multiply(self.s,tf.multiply(cos_theta,inv_mask))
+
+    output = tf.add(s_cos_t,s_cos_j)
+
+    return output

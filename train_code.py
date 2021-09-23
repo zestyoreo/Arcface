@@ -15,10 +15,12 @@ class train_model(tf.keras.Model):
     def call(self, x, y):
         x = self.resnet(x)
         return self.arcface(x, y)
+
 # Instantiate a loss function.
 def loss_fxn(logits,labels):
     loss_fn = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels))
     return loss_fn
+    
 # Instantiate an optimizer to train the model.
 optimizer = tf.keras.optimizers.Adam(lr=hypar.learning_rate)
 
@@ -52,15 +54,12 @@ for epoch in range(epochs):
 
     # Iterate over the batches of the dataset.
     for step, (x_batch_train, y_batch_train) in enumerate(train_dataset):
-        accuracy, train_loss, inference_loss, regularization_loss = train_step(x_batch_train, x_batch_train, hypar.reg_coef)
+        accuracy, train_loss, inference_loss, regularization_loss = train_step(x_batch_train, y_batch_train, hypar.reg_coef)
         # Log every 200 batches.
         if step % 200 == 0:
-            print(
-                "Training loss (for one batch) at step %d: %.4f"
-                % (step, float(train_loss))
-            )
+            print("Training loss (for one batch) at step %d: %.4f"% (step, float(train_loss)))
             print("Seen so far: %d samples" % ((step + 1) * hypar.batch_size))
 
-    print("Training acc over epoch: %.4f" % (float(accuracy),))
+    print("Training acc over epoch: %.4f" % (float(accuracy)))
 
     print("Time taken: %.2fs" % (time.time() - start_time))

@@ -31,7 +31,7 @@ def train_step(images, labels):
     with tf.GradientTape() as tape:
         logits = model(images,labels)
         pred = tf.nn.softmax(logits)
-        inf_loss = loss_fxn(logits,labels)
+        inf_loss = loss_fxn(pred,labels)
         loss = inf_loss
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))

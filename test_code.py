@@ -34,6 +34,7 @@ def get_distance(emb1,emb2):
     emb1 & emb2: are both 512 dimensional vectors from the trained resnet model
 
     get_distance: returns dot_prod,cosine_distance,euclidean_distance
+    Check Out "https://github.com/zestyoreo/Arcface/blob/main/get_distance()_test.ipynb" for clarity
     """
     dot_prod = np.dot(emb1,emb2.T)
 
@@ -89,3 +90,31 @@ def verify(img,face):
     if distance>threshold:
         return True
     return False
+
+def calculate_threshold(X,Y,model):
+    index = []
+    embeddings = get_embeddings(X,model)
+    same_person_distance = []
+    same_person_cosine_distance = []
+    same_person_euclidean_distance = []
+    for clas in range(hypar.no_classes):
+        index[clas] = []
+        for i in range (0,X.shape[0]):
+            if Y[i] == clas:
+                index[clas].append(i)
+        for i in range(len(index[clas])):
+            i1=index[clas][i]
+            for j in range(i+1,len(index[clas])):
+                j2=index[clas][j]
+                distance,cosine_distance,euclidean_distance = get_distance(embeddings[i1],embeddings[j2])
+                same_person_distance.append(distance)
+                same_person_cosine_distance.append(cosine_distance)
+                same_person_euclidean_distance.append(euclidean_distance)
+
+    same_person_distance = np.asarray(same_person_distance)
+    same_person_cosine_distance = np.asarray(same_person_cosine_distance)
+    same_person_euclidean_distance = np.asarray(same_person_euclidean_distance)
+
+    same_person_distance_mean = np.mean(same_person_distance)
+    same_person_cosine_distance_mean = np.mean(same_person_cosine_distance)
+    same_person_euclidean_distance_mean = np.mean(same_person_euclidean_distance)

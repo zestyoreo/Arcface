@@ -118,3 +118,4 @@ def calculate_threshold(X,Y,model):
     same_person_distance_mean = np.mean(same_person_distance)
     same_person_cosine_distance_mean = np.mean(same_person_cosine_distance)
     same_person_euclidean_distance_mean = np.mean(same_person_euclidean_distance)
+    return same_person_distance_mean,same_person_cosine_distance_mean,same_person_euclidean_distance_mean

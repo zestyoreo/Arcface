@@ -4,3 +4,4 @@ batch_size = 16
 learning_rate = 0.0005
 input_shape = (112,112,3)
 reg_coef = 0.9
+face_names_database = {}

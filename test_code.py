@@ -4,24 +4,8 @@ import time
 import numpy as np
 
 import hypar
-import arcface
-import network as net
 
 threshold=0.5
-
-class train_model(tf.keras.Model):
-    def __init__(self):
-        super(train_model, self).__init__()
-        #self.resnet = net.Resnet_nn()
-        self.resnet = net.Resnet()
-        self.arcface = arcface.Arcface_Layer()
-
-    def call(self, x, y):
-        x = self.resnet(x)
-        return self.arcface(x, y)
-
-model = train_model()        
-model.load_weights(file_name + '_full_model' + str(file_number)+ '.h5')
 
 def get_embeddings(input_imgs,model):
     test_model = model.resnet
@@ -49,16 +33,15 @@ def get_distance(emb1,emb2):
 
     return dot_prod,cosine_distance,euclidean_distance
 
-def recognise(img,face_imgs_database,face_names_database):
+def recognise(img,face_imgs_database,face_embedding_database,face_names_database):
     """
     img: numpy array of dims (112,112,3) of image of face to be recognised
-    face_imgs_database: numpy array of dims (num_of_faces,112,112,3)
+    face_imgs_database: numpy array of dims (num_of_faces,512)
     face_names_database: dictionary of form {index_of_face:"name_of_person"} comprising of names of faces in face_imgs_database array
     
     recognise: returns the name and face of the closest match in the database
     """
     img_embedding = get_embeddings(img)
-    face_embedding_database = get_embeddings(face_imgs_database)
     best_match_index = []
     best_distance = float('-inf')
     for i in range(int(face_embedding_database.shape[0])):

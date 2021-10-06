@@ -94,6 +94,7 @@ def verify(img,face):
 def calculate_threshold(X,Y,model):
     index = []
     embeddings = get_embeddings(X,model)
+
     same_person_distance = []
     same_person_cosine_distance = []
     same_person_euclidean_distance = []
@@ -118,4 +119,29 @@ def calculate_threshold(X,Y,model):
     same_person_distance_mean = np.mean(same_person_distance)
     same_person_cosine_distance_mean = np.mean(same_person_cosine_distance)
     same_person_euclidean_distance_mean = np.mean(same_person_euclidean_distance)
-    return same_person_distance_mean,same_person_cosine_distance_mean,same_person_euclidean_distance_mean
+
+    diff_person_distance = []
+    diff_person_cosine_distance = []
+    diff_person_euclidean_distance = []
+    for clas in range(hypar.no_classes):
+        for c in range(clas+1,hypar.no_classes):
+            for i in range(len(index[clas])):
+                for j in range(len(index[c])):
+                    distance,cosine_distance,euclidean_distance = get_distance(embeddings[i],embeddings[j])
+                    diff_person_distance.append(distance)
+                    diff_person_cosine_distance.append(cosine_distance)
+                    diff_person_euclidean_distance.append(euclidean_distance)
+
+    diff_person_distance = np.asarray(diff_person_distance)
+    diff_person_cosine_distance = np.asarray(diff_person_cosine_distance)
+    diff_person_euclidean_distance = np.asarray(diff_person_euclidean_distance)
+
+    diff_person_distance_mean = np.mean(diff_person_distance)
+    diff_person_cosine_distance_mean = np.mean(diff_person_cosine_distance)
+    diff_person_euclidean_distance_mean = np.mean(diff_person_euclidean_distance)
+
+    alpha=0.8
+    distance_threshold = diff_person_distance_mean*(1-alpha)+same_person_distance_mean*alpha
+    cosine_distance_threshold = diff_person_cosine_distance_mean*(1-alpha)+same_person_cosine_distance_mean*alpha
+    euclidean_distance_threshold = diff_person_euclidean_distance_mean*(1-alpha)+same_person_euclidean_distance_mean*alpha
+    return distance_threshold, cosine_distance_threshold, euclidean_distance_threshold

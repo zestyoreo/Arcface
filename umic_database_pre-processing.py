@@ -14,7 +14,7 @@ down_points = (down_size, down_size)
 
 face_database = []
 face_names_database = []
-
+Y = []
 for name in names:
     file_name = "UMIC Members/"+name+"/*.jpg"
     face_shots = []
@@ -26,15 +26,17 @@ for name in names:
         cv2.waitKey()
         face_database.append(face_img)
         face_names_database.append(name)
+        Y.append(names.index(name))
 
+Y = np.array(Y)
 database = np.array(face_database[0],dtype=float)
 for i in range(1,len(face_database)):
     j = np.array(face_database[i],dtype=float)
     database = np.concatenate((database,j),axis=0)
 
 save("umic_members_images.npy",database)
+save("umic_members_Y.npy",Y)
 file_name = "umic_members_names.pkl"
-
 open_file = open(file_name, "wb")
 pickle.dump(face_names_database, open_file)
 open_file.close()

@@ -75,13 +75,13 @@ def verify(img,face):
     return False
 
 def calculate_threshold(X,Y,model):
-    index = []
+    index = [None] * X.shape[0]
     embeddings = get_embeddings(X,model)
 
     same_person_distance = []
     same_person_cosine_distance = []
     same_person_euclidean_distance = []
-    for clas in range(hypar.no_classes):
+    for clas in range(hypar.num_classes):
         index[clas] = []
         for i in range (0,X.shape[0]):
             if Y[i] == clas:
@@ -106,8 +106,8 @@ def calculate_threshold(X,Y,model):
     diff_person_distance = []
     diff_person_cosine_distance = []
     diff_person_euclidean_distance = []
-    for clas in range(hypar.no_classes):
-        for c in range(clas+1,hypar.no_classes):
+    for clas in range(hypar.num_classes):
+        for c in range(clas+1,hypar.num_classes):
             for i in range(len(index[clas])):
                 for j in range(len(index[c])):
                     distance,cosine_distance,euclidean_distance = get_distance(embeddings[i],embeddings[j])

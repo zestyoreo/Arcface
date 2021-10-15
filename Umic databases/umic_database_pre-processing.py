@@ -8,16 +8,13 @@ from numpy import save
 import cv2
 import os
 
-num_photos = 100
 names = ["Amit", "atharva", "Balasubramanian", "Harshil", "Meghna", "Rihan Aaron", "Ronit", "Saad", "shubham","Siddhant"]
 down_size = 112
 down_points = (down_size, down_size)
 
 face_database = []
 face_names_database = []
-Y = [None] * num_photos
-i = 0
-j = 0
+Y = []
 for name in names:
     file_name = "UMIC Members/"+name+"/*.jpg"
     face_shots = []
@@ -29,16 +26,16 @@ for name in names:
         cv2.waitKey()
         face_database.append(face_img)
         face_names_database.append(name)
-        Y[i] = j
-        i+=1
-    j+=1
+        Y.append(names.index(name))
 
 Y = np.array(Y)
 print(Y.shape)
 
 database = np.array(face_database[0],dtype=float)
+database = np.reshape(database,(1,112,112,3))
 for i in range(1,len(face_database)):
     j = np.array(face_database[i],dtype=float)
+    j = np.reshape(j,(1,112,112,3))
     database = np.concatenate((database,j),axis=0)
 
 print(database.shape)

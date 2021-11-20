@@ -24,7 +24,10 @@ app = Flask(__name__)
 
 # Model saved with Keras model.save()
 MODEL_PATH = 'models/arcface_weights.h5'
-cosine_threshold = 0.08
+cosine_threshold = 0.075
+
+def Resnet_preprocess(x):
+    return tf.keras.applications.resnet50.preprocess_input(x)
 
 def ResNet34():
 
@@ -110,59 +113,42 @@ def get_distance(emb1,emb2):
 
   return cosine_distance
 
-def preprocess_face(img, target_size=(224, 224)):
-
-	img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-	# img = cv2.resize(img, target_size) #resize causes transformation on base image, adding black pixels to resize will not deform the base image
-	
-	if img.shape[0] > 0 and img.shape[1] > 0:
-		factor_0 = target_size[0] / img.shape[0]
-		factor_1 = target_size[1] / img.shape[1]
-		factor = min(factor_0, factor_1)
-		
-		dsize = (int(img.shape[1] * factor), int(img.shape[0] * factor))
-		img = cv2.resize(img, dsize)
-		
-		# Then pad the other side to the target size by adding black pixels
-		diff_0 = target_size[0] - img.shape[0]
-		diff_1 = target_size[1] - img.shape[1]
-		
-		img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2)), 'constant')
-   
-	if img.shape[0:2] != target_size:
-		img = cv2.resize(img, target_size)
-
-	#normalizing the image pixels
-
-	img_pixels = image.img_to_array(img) #what this line doing? must?
-	img_pixels = np.expand_dims(img_pixels, axis = 0)
-	img_pixels /= 255 #normalize input in [0, 1]
-
-	return img_pixels
-
 
 def face_verify(img_path,img_path2,model):
-    face1 = image.load_img(img_path, target_size=(224, 224))
-    face2 = image.load_img(img_path2, target_size=(224, 224))
     
-    # Preprocessing the images
-    x1 = image.img_to_array(face1)
-    x2 = image.img_to_array(face2)
-
-    x1 = np.expand_dims(x1, axis=0)
-    x2 = np.expand_dims(x2, axis=0)
-
+    face1x = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+    if(face1x.shape[2]==4):
+      face1 = cv2.cvtColor(face1x, cv2.COLOR_BGRA2RGB)
+    else:
+      face1 = cv2.cvtColor(face1x, cv2.COLOR_BGR2RGB)
+    face2x = cv2.imread(img_path2, cv2.IMREAD_UNCHANGED)
+    if(face2x.shape[2]==4):
+      face2 = cv2.cvtColor(face2x, cv2.COLOR_BGRA2RGB)
+    else:
+      face2 = cv2.cvtColor(face2x, cv2.COLOR_BGR2RGB)
+    print('Original Dimensions : ',face1.shape)
+    # resize image
+    x1a = cv2.resize(face1, (112,112), interpolation = cv2.INTER_AREA)
+    print('Resized Dimensions : ',x1a.shape)
+    x1a = Resnet_preprocess(x1a)
+    img_pixels1 = np.expand_dims(x1a, axis = 0)
+    #img_pixels1 /= 255           #normalize input 
+    print(img_pixels1.shape)
+    x2a = cv2.resize(face2, (112,112), interpolation = cv2.INTER_AREA)
+    x2a = Resnet_preprocess(x2a)
+    img_pixels2 = np.expand_dims(x2a, axis = 0)
+    #|img_pixels2 /= 255           #normalize input 
     # Be careful how your trained model deals with the input
     # otherwise, it won't make correct prediction!
-    x1 = preprocess_face(x1, mode='caffe')
-    x2 = preprocess_face(x2, mode='caffe')
+    x1 = img_pixels1
+    x2 = img_pixels2
 
     embedding1 = model.predict(x1)
     embedding2 = model.predict(x2)
     preds = "Different People"
 
-    cosine_distance = get_distance(embedding1,embedding2)
+    cosine_distance = get_distance(embedding1.T,embedding2.T)
+    print(cosine_distance)
     if cosine_distance<cosine_threshold:
         preds = "Same People"
 

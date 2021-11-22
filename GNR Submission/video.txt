@@ -1,0 +1,13 @@
+***
+## Videos
+***
+The video presentation we made was very long. So we divided it into parts. To view short demos of the model and the work we have done please watch [GNR638 Project Shorter Version](https://youtu.be/XCc4fGwsxBI). The [Arcface: GNR638 Project Long Version](https://youtu.be/5nEVttJXHg8) is a combination of the shorter version and the [Arcface Explanation](https://youtu.be/ANnSRkJ8UM8). In [Arcface: Visualizations and Inference](https://youtu.be/1Qhpn5M8jmg) we describe the models we have trained and try to find the thresholds and best hyperparameters based on the experiments we have performed on data. The video titled [ArcFace: Face Verification Deployment using Flask](https://youtu.be/-QoZPBteerA) is already a part of the sort and long version videos.<br>
+***
+We as a team have taken a lot of efforts to finish this project. It would be awesome if you could take some more time and see our full project,explanation and analysis (pls watch [Arcface: GNR638 Project Long Version](https://youtu.be/5nEVttJXHg8) & [Arcface: Visualizations and Inference](https://youtu.be/1Qhpn5M8jmg)). If you feel this to be a violation of instructions just watch [GNR638 Project Shorter Version](https://youtu.be/XCc4fGwsxBI) for a quick overview of our project. Either ways thank you for seeing our project and hope u like it!
+***
+- [Arcface: GNR638 Project Long Version](https://youtu.be/5nEVttJXHg8)
+- [GNR638 Project Shorter Version](https://youtu.be/XCc4fGwsxBI)
+- [Arcface Explanation](https://youtu.be/ANnSRkJ8UM8)
+- [Arcface: Visualizations and Inference](https://youtu.be/1Qhpn5M8jmg)
+- [ArcFace: Face Verification Deployment using Flask](https://youtu.be/-QoZPBteerA)
+***
